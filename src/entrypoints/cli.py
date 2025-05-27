@@ -1,18 +1,26 @@
 import re
 import sys
-from src.abstrations.dependencies import get_use_case
+import asyncio
+from src.abstractions.dependencies import get_use_case
+from langsmith import traceable
 
-def main() -> None:
-    if len(sys.argv) < 2:
-        print("Usage: python app.py <URL>")
+URL_PATTERN = r'https?://\S+|www\.\S+'
+
+@traceable
+async def main() -> None:    
+    input_text = input("Enter URL(s) (with whitespace in between) or query to find related articles: ").strip()
+    if input_text.lower() in ('exit', 'quit'):        
         sys.exit(1)
-    
-    input = sys.argv[1]
-    pattern = r'https?://\S+|www\.\S+'
-    are_urls = re.match(pattern, input)
 
-    use_case = get_use_case(are_urls)
-    use_case.process(input)
+    urls = re.findall(URL_PATTERN, input_text)    
+    is_url_input = len(urls) >= 1
+
+    use_case = get_use_case(is_url_input)
+    await use_case.process_async(input_text)
     
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__":    
+    try:
+        asyncio.run(main())
+    except Exception as error:
+        print(f"Unexpected error: {error}")
+        sys.exit(1)

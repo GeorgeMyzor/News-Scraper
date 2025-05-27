@@ -1,5 +1,5 @@
-from openai import OpenAI
 import os
+from openai import OpenAI
 
 def generate_summary(article):
     """

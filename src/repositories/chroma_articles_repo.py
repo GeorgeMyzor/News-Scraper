@@ -1,46 +1,44 @@
 from langchain_core.documents import Document
-from src.domain.article import Article
 from langchain_chroma import Chroma
-from src.abstrations.articles_repo import ArticlesRepo
+from src.abstractions.articles_repo import ArticlesRepo
+from src.domain.article_data import ArticleData
+from typing import List, Tuple
 
 class ChromaArticlesRepo(ArticlesRepo):
-    """Articles repository based on chromadb"""
+    """Articles repository based on ChromaDB."""
+
     def __init__(self, vector_store: Chroma) -> None:
         self.vector_store = vector_store
+
+    async def save_async(self, articles: List[ArticleData]) -> None:
+        """
+        Saves a summarized article to the vector store.
+        """
         
-    def save(self, article: Article):
-        """
-        Saves a document to the vector database.
-        """
+        documents = self._articles_to_documents(articles)
 
-        semantic_text = f"{article.summary}\nTopics: {', '.join(article.topics)}"
+        await self.vector_store.aadd_documents(documents)
 
-        documents = [
-            Document(
+    def _articles_to_documents(self, articles: List[ArticleData]) -> List[Document]:
+        documents = []
+        for article in articles:
+            semantic_text = f"{article.summary}\nTopics: {', '.join(article.topics)}"
+            doc = Document(
                 page_content=semantic_text,
                 metadata={
                     "headline": article.headline,
                     "summary": article.summary,
                     "topics": ','.join(article.topics),
                     "content": article.content,
-                    "political_bias": article.political_bias
+                    "political_bias": article.political_bias,
                 },
             )
-        ]
-        self.vector_store.add_documents(
-            documents=documents
-        )
-        print(f"Article saved to vector DB: {article.headline}")
-
-        
-    def query(self, query: str):
+            documents.append(doc)
+        return documents
+    
+    async def query_async(self, query: str) -> List[Tuple[Document, float]] :
         """
-        Query
+        Runs a similarity search on the vector DB and returns top results.
         """
-
-        results = self.vector_store.similarity_search_with_score(query)
-
-        for i, doc in enumerate(results):
-            print(f"\nResult {i + 1}:")
-            print(f"\nScore: {doc[1]}")
-            print(f"\nTitle: {doc[0].metadata['headline']}")
+        return await self.vector_store.asimilarity_search_with_score(query)
+    

@@ -5,9 +5,9 @@ from src.repositories.chroma_articles_repo import ChromaArticlesRepo
 from src.use_cases.summarizers.azure_ai_summarizer import AzureAISummarizer
 from src.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
 from src.use_cases.query_articles_use_case import QueryArticleUseCase
-from src.abstrations.use_case import UseCase
-from src.abstrations.articles_repo import ArticlesRepo
-from src.abstrations.summarizer import Summarizer
+from src.abstractions.use_case import UseCase
+from src.abstractions.articles_repo import ArticlesRepo
+from src.abstractions.summarizer import Summarizer
 from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from src.config.settings import settings
@@ -61,10 +61,10 @@ def build_summarizer() -> Summarizer:
     return AzureAISummarizer(llm, prompt)
 
 ### Services
-def get_use_case(are_urls: bool) -> UseCase:
+def get_use_case(is_url_input: bool) -> UseCase:
     repo = build_articles_repo()
 
-    if are_urls:
+    if is_url_input:
         summarizer = build_summarizer()
 
         return SummarizeArticlesUseCase(repo, summarizer)

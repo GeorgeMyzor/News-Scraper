@@ -1,22 +1,24 @@
-from src.use_cases.news_scrapper import scrap_article
-from src.abstrations.articles_repo import ArticlesRepo
-from src.abstrations.summarizer import Summarizer
+from src.use_cases.scrapper import scrap_articles_async
+from src.abstractions.articles_repo import ArticlesRepo
+from src.abstractions.summarizer import Summarizer
+from src.abstractions.use_case import UseCase
+from src.domain.article_data import ArticleData
 
-class SummarizeArticlesUseCase:
+class SummarizeArticlesUseCase(UseCase):
     def __init__(self, repo: ArticlesRepo, summarizer: Summarizer) -> None:
         self.repo = repo
         self.summarizer = summarizer
 
-    def process(self, urls):
-        headline, content = scrap_article(urls)
+    async def process_async(self, input: str) -> None:
+        urls: list[str] = input.split(' ')
+        scrapped_articles = await scrap_articles_async(urls)
         
-        if headline and content:
-            print(f"Title:\n{headline}\n")
-            print(f"Article Content:\n{content}\n")
-        else:
-            print(content) 
+        articles: list[ArticleData] = await self.summarizer.summarize_async(scrapped_articles)
 
-        article = self.summarizer.summarize(headline, content)
-
-        self.repo.save(article)
+        await self.repo.save_async(articles)
+        
+        print(f"Article(s) saved to vector DB:")        
+        for i, article in enumerate(articles, start=1):
+            print(f"Title: {article.headline}")
+            print(f"Topics: {', '.join(article.topics)}\n")
     
