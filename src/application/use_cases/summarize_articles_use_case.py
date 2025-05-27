@@ -1,4 +1,4 @@
-from src.use_cases.scrapper import scrap_articles_async
+from src.application.services.scrapper import scrap_articles_async
 from src.abstractions.articles_repo import ArticlesRepo
 from src.abstractions.summarizer import Summarizer
 from src.abstractions.use_case import UseCase

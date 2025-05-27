@@ -3,16 +3,17 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from src.repositories.chroma_articles_repo import ChromaArticlesRepo
-from src.use_cases.summarizers.azure_ai_summarizer import AzureAISummarizer
-from src.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
-from src.use_cases.query_articles_use_case import QueryArticleUseCase
+from src.application.services.azure_ai_summarizer import AzureAISummarizer
+from src.application.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
+from src.application.use_cases.query_articles_use_case import QueryArticleUseCase
+from src.application.services.query_enhancer import QueryEnhancer
 from src.abstractions.use_case import UseCase
 from src.abstractions.articles_repo import ArticlesRepo
 from src.abstractions.summarizer import Summarizer
 from src.config.settings import settings
 
 ### Database
-def build_embeddings() -> HuggingFaceEmbeddings:
+def build_embeddings():
     return HuggingFaceEmbeddings(model_name=settings.HUGGINGFACE_MODEL_NAME)
 
 def build_chroma() -> Chroma: 
@@ -31,13 +32,14 @@ def build_articles_repo() -> ArticlesRepo:
 ### LLM
 def build_prompt() -> ChatPromptTemplate:
     system_template = """
-        You are a helpful assistant that summarizes news articles.
-        Only extract relevant information from the text. 
-        If you do not know the value of an attribute asked to extract, 
-        return null for the attribute's value.
+        You are a precise and concise assistant that summarizes news articles into structured data.
+        Your task is to extract key information such as headline, summary, key topics, people mentioned, locations, and publication date.
+        If any information is missing or cannot be inferred, return null for that field.
+        Always return your answer in JSON format with clear, concise values.
     """
     user_template = """
-        Summarize the following news article:
+        Summarize the following news article in 2-4 concise sentences, highlighting the main event, key people, and any outcomes or implications.
+
         Headline: {headline}
         Content: {content}
     """
@@ -52,6 +54,11 @@ def build_llm() -> AzureChatOpenAI:
         azure_deployment=settings.AZURE_OPENAI_DEPLOYMENT_NAME,
         openai_api_version=settings.AZURE_OPENAI_API_VERSION,
     )
+
+def build_query_enhancer():
+    llm = build_llm() 
+
+    return QueryEnhancer(llm)
 
 def build_summarizer() -> Summarizer:
     llm = build_llm()    
@@ -68,4 +75,6 @@ def get_use_case(is_url_input: bool) -> UseCase:
 
         return SummarizeArticlesUseCase(repo, summarizer)
     else:
-        return QueryArticleUseCase(repo)
+        query_enhancer = build_query_enhancer()
+
+        return QueryArticleUseCase(repo, query_enhancer)

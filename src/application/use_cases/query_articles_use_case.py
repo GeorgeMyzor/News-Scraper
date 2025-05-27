@@ -1,11 +1,14 @@
 from src.abstractions.articles_repo import ArticlesRepo
 from src.abstractions.use_case import UseCase
+from src.application.services.query_enhancer import QueryEnhancer
 
 class QueryArticleUseCase(UseCase):
-    def __init__(self, repo: ArticlesRepo) -> None:
+    def __init__(self, repo: ArticlesRepo, query_enhancer: QueryEnhancer) -> None:
         self.repo = repo
+        self.query_enhancer = query_enhancer
 
-    async def process_async(self, query: str) -> None:        
+    async def process_async(self, query: str) -> None:
+        query = await self.query_enhancer.enchance_async(query)
         results = await self.repo.query_async(query)
     
         if not results:

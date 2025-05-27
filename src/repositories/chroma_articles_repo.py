@@ -22,7 +22,7 @@ class ChromaArticlesRepo(ArticlesRepo):
     def _articles_to_documents(self, articles: List[ArticleData]) -> List[Document]:
         documents = []
         for article in articles:
-            semantic_text = f"{article.summary}\nTopics: {', '.join(article.topics)}"
+            semantic_text = f"Headline: {article.headline}\nSummary: {article.summary}\nTopics: {', '.join(article.topics)}"
             doc = Document(
                 page_content=semantic_text,
                 metadata={
