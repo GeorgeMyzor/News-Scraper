@@ -2,6 +2,10 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 class ArticleEnriched(BaseModel):
+    """
+    Represents the enriched data structure for an article, including its title, content,
+    AI generated summary and topics, and political bias.
+    """
     summary: str = Field(
         default=None, description="Summary that captures key points of the article."
     )

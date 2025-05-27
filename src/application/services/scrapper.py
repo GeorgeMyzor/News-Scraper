@@ -4,10 +4,24 @@ from bs4 import BeautifulSoup
 from typing import List, Tuple, Optional
 
 async def scrap_articles_async(urls: List[str]) -> List[Tuple[Optional[str], str]]:
+    """
+    Scrapes multiple articles asynchronously from a list of URLs.
+    Args:
+        urls (List[str]): A list of URLs to scrape.
+    Returns:    
+        List[Tuple[Optional[str], str]]: A list of tuples, each containing the article title (or None if not found) and the article content.
+    """
     tasks = [scrap_article_async(url) for url in urls]
     return await asyncio.gather(*tasks)
 
 async def scrap_article_async(url: str) -> Tuple[Optional[str], str]:
+    """
+    Scrapes the article title and content from a given URL.
+    Args:
+        url (str): The URL of the article to scrape.
+    Returns:
+        Tuple[Optional[str], str]: A tuple containing the article title (or None if not found) and the article content.
+    """ 
     async with httpx.AsyncClient(timeout=10) as client:
         response = await client.get(url)
         response.raise_for_status()

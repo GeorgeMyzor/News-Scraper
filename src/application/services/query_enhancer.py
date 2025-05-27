@@ -1,8 +1,13 @@
-import asyncio
 from langchain_openai import AzureChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
+from src.config.prompts import build_query_enhancement_prompt
+from langsmith import traceable
 
+@traceable
 class QueryEnhancer():
+    """
+    Enhances user queries to be more semantically rich and specific for searching documents.
+    Uses an LLM to rewrite the query based on a predefined prompt.
+    """
     def __init__(
         self,
         llm: AzureChatOpenAI
@@ -10,9 +15,8 @@ class QueryEnhancer():
         self.llm = llm
 
     async def enchance_async(self, query: str) -> str:      
-        promt = ChatPromptTemplate.from_messages([
-            ("user",  "Rewrite this query to make it semantically rich and specific for searching documents. Query: {userQuery}"),
-        ])
+        promt = build_query_enhancement_prompt()
         message = await promt.ainvoke(query)
         result = await self.llm.ainvoke(message)
+
         return result.content

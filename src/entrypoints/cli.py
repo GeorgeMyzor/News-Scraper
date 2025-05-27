@@ -2,11 +2,9 @@ import re
 import sys
 import asyncio
 from src.abstractions.dependencies import get_use_case
-from langsmith import traceable
 
 URL_PATTERN = r'https?://\S+|www\.\S+'
 
-@traceable
 async def main(get_use_case_func) -> None:        
     print("Welcome to the Article Scrapper App!")
     print("Enter one or more URLs (space-separated) to summarize the articles.")

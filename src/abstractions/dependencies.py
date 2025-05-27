@@ -10,6 +10,7 @@ from src.application.services.query_enhancer import QueryEnhancer
 from src.abstractions.use_case import UseCase
 from src.abstractions.articles_repo import ArticlesRepo
 from src.abstractions.summarizer import Summarizer
+from src.config.prompts import build_summary_prompt
 from src.config.settings import settings
 
 ### Database
@@ -30,24 +31,6 @@ def build_articles_repo() -> ArticlesRepo:
 
 
 ### LLM
-def build_prompt() -> ChatPromptTemplate:
-    system_template = """
-        You are a precise and concise assistant that summarizes news articles into structured data.
-        Your task is to extract key information such as headline, summary, key topics, people mentioned, locations, and publication date.
-        If any information is missing or cannot be inferred, return null for that field.
-        Always return your answer in JSON format with clear, concise values.
-    """
-    user_template = """
-        Summarize the following news article in 2-4 concise sentences, highlighting the main event, key people, and any outcomes or implications.
-
-        Headline: {headline}
-        Content: {content}
-    """
-    return ChatPromptTemplate.from_messages([
-        ("system", system_template),
-        ("user",   user_template),
-    ])
-
 def build_llm() -> AzureChatOpenAI:
     return AzureChatOpenAI(
         azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
@@ -62,7 +45,7 @@ def build_query_enhancer():
 
 def build_summarizer() -> Summarizer:
     llm = build_llm()    
-    prompt = build_prompt()
+    prompt = build_summary_prompt()
     
     return AzureAISummarizer(llm, prompt)
 
