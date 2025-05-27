@@ -20,5 +20,6 @@ class SummarizeArticlesUseCase(UseCase):
         print(f"Article(s) saved to vector DB:")        
         for i, article in enumerate(articles, start=1):
             print(f"Title: {article.headline}")
-            print(f"Topics: {', '.join(article.topics)}\n")
+            print(f"Topics: {', '.join(article.topics)}")
+            print(f"Summary: {article.summary}\n")
     

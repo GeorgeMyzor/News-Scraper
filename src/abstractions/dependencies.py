@@ -1,6 +1,7 @@
-from typing import Annotated
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_openai import AzureChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
 from src.repositories.chroma_articles_repo import ChromaArticlesRepo
 from src.use_cases.summarizers.azure_ai_summarizer import AzureAISummarizer
 from src.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
@@ -8,19 +9,17 @@ from src.use_cases.query_articles_use_case import QueryArticleUseCase
 from src.abstractions.use_case import UseCase
 from src.abstractions.articles_repo import ArticlesRepo
 from src.abstractions.summarizer import Summarizer
-from langchain_openai import AzureChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
 from src.config.settings import settings
 
 ### Database
 def build_embeddings() -> HuggingFaceEmbeddings:
-    return HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+    return HuggingFaceEmbeddings(model_name=settings.HUGGINGFACE_MODEL_NAME)
 
 def build_chroma() -> Chroma: 
     return Chroma(
-        collection_name="articles",
+        collection_name=settings.ARTICLES_COLLECTION_NAME,
         embedding_function=build_embeddings(),
-        persist_directory="./chroma_db"
+        persist_directory=settings.CHROMA_PERSIST_DIRECTORY
     )
 
 def build_articles_repo() -> ArticlesRepo:
