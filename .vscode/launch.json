@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Main",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.entrypoints.cli",
+      "args": ["Trump on memorial day"],//["https://www.cbsnews.com/news/trump-arlington-national-cemetery-memorial-day-2025-05-26/"],
+      "justMyCode": true
+    }
+  ]
+}
