@@ -1,7 +1,8 @@
 from langchain_openai import AzureChatOpenAI
-from src.config.prompts import build_query_enhancement_prompt
+from config.prompts import build_query_enhancement_prompt
 from langsmith import traceable
-from src.config.settings import settings
+from config.settings import settings
+import logging
 
 @traceable
 class QueryEnhancer():
@@ -15,7 +16,7 @@ class QueryEnhancer():
     ):
         self.llm = llm
 
-    async def enchance_async(self, query: str) -> str: 
+    async def enhance_async(self, query: str) -> str: 
         """
         Enhances the given query using an LLM.
         Args:
@@ -26,8 +27,12 @@ class QueryEnhancer():
         if settings.USE_DETERMINISTIC_QUERY:
             return query    
         
+        logging.info("Enhancing query: %s", query)
+        
         promt = build_query_enhancement_prompt()
         message = await promt.ainvoke(query)
         result = await self.llm.ainvoke(message)
+        
+        logging.info("Enhanced query: %s", result.content)
 
         return result.content

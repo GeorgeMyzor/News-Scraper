@@ -11,6 +11,3 @@ class Article(BaseModel):
     summary: str
     topics: Optional[list[str]]
     political_bias: Optional[str]
-    
-    class Config:
-        frozen = True 

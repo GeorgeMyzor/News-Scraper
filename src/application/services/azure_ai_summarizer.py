@@ -2,9 +2,9 @@ import asyncio
 from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 
-from src.domain.article_enrichment import ArticleEnrichment
-from src.domain.article import Article
-from src.abstractions.summarizer import Summarizer
+from domain.article_enrichment import ArticleEnrichment
+from domain.article import Article
+from abstractions.summarizer import Summarizer
 from langsmith import traceable
 
 @traceable

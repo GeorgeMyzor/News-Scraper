@@ -2,11 +2,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
-from src.application.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
-from src.application.use_cases.query_articles_use_case import QueryArticleUseCase
-from src.abstractions.dependencies import get_summarize_articles_user_case, get_query_articles_user_case
-from src.application.models.related_article_dto import RelatedArticleDTO
-from src.application.models.article_summary_dto import ArticleSummaryDTO
+from application.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
+from application.use_cases.query_articles_use_case import QueryArticleUseCase
+from abstractions.dependencies import get_summarize_articles_user_case, get_query_articles_user_case
+from application.models.related_article_dto import RelatedArticleDTO
+from application.models.article_summary_dto import ArticleSummaryDTO
 
 router = APIRouter(prefix="/articles")
 

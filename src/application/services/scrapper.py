@@ -2,6 +2,7 @@ import asyncio
 import httpx
 from bs4 import BeautifulSoup
 from typing import List, Tuple, Optional
+import logging
 
 async def scrap_articles_async(urls: List[str]) -> List[Tuple[Optional[str], str]]:
     """
@@ -22,6 +23,7 @@ async def scrap_article_async(url: str) -> Tuple[Optional[str], str]:
     Returns:
         Tuple[Optional[str], str]: A tuple containing the article title (or None if not found) and the article content.
     """ 
+    logging.info(f"Scraping article from URL: {url}")
     async with httpx.AsyncClient(timeout=10) as client:
         response = await client.get(url)
         response.raise_for_status()
@@ -38,4 +40,6 @@ async def scrap_article_async(url: str) -> Tuple[Optional[str], str]:
         paragraphs = soup.find_all('p')
         content = "\n".join(p.get_text(strip=True) for p in paragraphs) if paragraphs else "No article content found"
 
+    logging.info(f"Scraped article title: {title.strip() if title else 'No title'}")
+    
     return title.strip(), content.strip()

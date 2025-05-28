@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.domain.article import Article
+from domain.article import Article
 
 class Summarizer(ABC):
     """

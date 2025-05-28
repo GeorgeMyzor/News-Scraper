@@ -1,7 +1,7 @@
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
-from src.abstractions.articles_repo import ArticlesRepo
-from src.domain.article import Article
+from abstractions.articles_repo import ArticlesRepo
+from domain.article import Article
 from typing import List, Tuple
 
 class ChromaArticlesRepo(ArticlesRepo):

@@ -1,7 +1,7 @@
 import re
 import sys
 import asyncio
-from src.abstractions.dependencies import get_use_case
+from abstractions.dependencies import get_use_case
 
 URL_PATTERN = r'https?://\S+|www\.\S+'
 

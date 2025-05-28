@@ -1,8 +1,9 @@
-from src.application.services.scrapper import scrap_articles_async
-from src.abstractions.articles_repo import ArticlesRepo
-from src.abstractions.summarizer import Summarizer
-from src.domain.article import Article
-from src.application.models.article_summary_dto import ArticleSummaryDTO
+from application.services.scrapper import scrap_articles_async
+from abstractions.articles_repo import ArticlesRepo
+from abstractions.summarizer import Summarizer
+from domain.article import Article
+from application.models.article_summary_dto import ArticleSummaryDTO
+import logging
 
 class SummarizeArticlesUseCase():
     """
@@ -19,11 +20,15 @@ class SummarizeArticlesUseCase():
         Args:
             input (str): A space-separated string of URLs to scrape and summarize.
         """
+        logging.info("Executing summarize articles use case")
+        
         scrapped_articles = await scrap_articles_async(urls)
         
         articles: list[Article] = await self.summarizer.summarize_async(scrapped_articles)
 
         await self.repo.save_async(articles)
+        
+        logging.info("Summarize articles use case completed with %d articles", len(articles))
         
         return [ArticleSummaryDTO.from_article(article=article) for article in articles]
     
