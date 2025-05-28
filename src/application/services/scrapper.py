@@ -12,10 +12,10 @@ async def scrap_articles_async(urls: List[str]) -> List[Tuple[Optional[str], str
     Returns:    
         List[Tuple[Optional[str], str]]: A list of tuples, each containing the article title (or None if not found) and the article content.
     """
-    tasks = [scrap_article_async(url) for url in urls]
+    tasks = [_scrap_article_async(url) for url in urls]
     return await asyncio.gather(*tasks)
 
-async def scrap_article_async(url: str) -> Tuple[Optional[str], str]:
+async def _scrap_article_async(url: str) -> Tuple[Optional[str], str]:
     """
     Scrapes the article title and content from a given URL.
     Args:

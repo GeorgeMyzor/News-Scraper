@@ -15,5 +15,7 @@ class ArticleEnrichment(BaseModel):
     political_bias: Optional[str] = Field(
         default=None,
         description="Political bias of the article.",
-        enum=["Right", "Lean Right", "None", "Lean Left", "Left"]
+        json_schema_extra={
+            "enum":["Right", "Lean Right", "None", "Lean Left", "Left"]
+        }
     )

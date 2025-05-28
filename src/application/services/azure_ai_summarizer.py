@@ -32,6 +32,6 @@ class AzureAISummarizer(Summarizer):
         messages = await self.prompt.ainvoke({"headline": headline, "content": content})
 
         output = await self.llm.ainvoke(messages)
-        article = Article(**output.dict(), headline=headline, content=content)
+        article = Article(**output.model_dump(), headline=headline, content=content)
 
         return article
