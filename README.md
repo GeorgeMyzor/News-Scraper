@@ -5,16 +5,17 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
 ## Features
 
 - Scrapes news articles from provided URLs  
-- Uses ChatGPT 4o for AI-powered summarization with structured output  
-- Generates embeddings via Hugging Face models  
-- Stores data in Chroma vector database for efficient similarity search  
+- Uses ChatGPT 4o-mini for AI-powered summarization with structured output  
+- Generates embeddings via Hugging Face models
+- Enhances user query for more efficient search
+- Stores data in Chroma/FAISS vector database for efficient similarity search  
 - Clean Architecture-inspired code structure for maintainability  
 
 ## Installation
 
 1. Clone the repository:
    ```bash
-   git clone <your-repo-url>
+   git clone [<your-repo-url>](https://github.com/GeorgeMyzor/News-Scrapper.git)
    cd <your-repo-folder>
    ```
    
@@ -30,6 +31,7 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
    ```
    
 4. Configure environment variables:
+
    Copy .env.example to .env:
    ```bash
    cp .env.example .env
@@ -59,9 +61,21 @@ AZURE_OPENAI_API_KEY=
 AZURE_OPENAI_ENDPOINT=
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 AZURE_OPENAI_DEPLOYMENT_NAME="gpt-4o-mini"
+AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME="text-embedding-3-large"
+AZURE_OPENAI_EMBEDDING_API_VERSION="2024-02-01"
 
-LANGSMITH_TRACING=true
+LANGSMITH_TRACING=false
 LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
 LANGSMITH_API_KEY=
 LANGSMITH_PROJECT=
+
+ARTICLES_COLLECTION_NAME="articles"
+CHROMA_PERSIST_DIRECTORY="./chroma_db"
+
+HUGGINGFACE_MODEL_NAME="sentence-transformers/all-MiniLM-L6-v2"
+
+USE_CHROMA_DB=true
+USE_DETERMINISTIC_QUERY=false
+
+RELEVANCE_SCORE_THRESHOLD=1.5
 ```

@@ -57,6 +57,5 @@ class ChromaArticlesRepo(ArticlesRepo):
         Returns:
             List[Tuple[Document, float]]: List of tuples containing Document and similarity score.
         """                
-        kwargs = {"k": 5}
-        return await self.vector_store.asimilarity_search_with_score(query, **kwargs)
+        return await self.vector_store.asimilarity_search_with_score(query)
     
