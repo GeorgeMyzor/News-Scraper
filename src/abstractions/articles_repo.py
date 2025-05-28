@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.domain.article_data import ArticleData
+from domain.article import Article
 
 class ArticlesRepo(ABC):
     """
@@ -8,7 +8,7 @@ class ArticlesRepo(ABC):
     It should be implemented by any concrete repository class.
     """
     @abstractmethod
-    def save_async(self, article: ArticleData) -> None:
+    def save_async(self, article: Article) -> None:
         pass
 
     @abstractmethod

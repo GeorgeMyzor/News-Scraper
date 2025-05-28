@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel, Field
 
-class ArticleEnriched(BaseModel):
+class ArticleEnrichment(BaseModel):
     """
     Represents the enriched data structure for an article, including its title, content,
     AI generated summary and topics, and political bias.
@@ -15,5 +15,7 @@ class ArticleEnriched(BaseModel):
     political_bias: Optional[str] = Field(
         default=None,
         description="Political bias of the article.",
-        enum=["Right", "Lean Right", "None", "Lean Left", "Left"]
+        json_schema_extra={
+            "enum":["Right", "Lean Right", "None", "Lean Left", "Left"]
+        }
     )

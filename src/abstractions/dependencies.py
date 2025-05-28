@@ -1,64 +1,36 @@
-import faiss
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import AzureChatOpenAI
-from src.repositories.chroma_articles_repo import ChromaArticlesRepo
-from src.repositories.faiss_articles_repo import FaissArticlesRepo
-from src.application.services.azure_ai_summarizer import AzureAISummarizer
-from src.application.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
-from src.application.use_cases.query_articles_use_case import QueryArticleUseCase
-from src.application.services.query_enhancer import QueryEnhancer
-from src.abstractions.use_case import UseCase
-from src.abstractions.articles_repo import ArticlesRepo
-from src.abstractions.summarizer import Summarizer
-from src.config.prompts import build_summary_prompt
-from src.config.settings import settings
-from langchain_community.vectorstores import FAISS
-from langchain_community.docstore import InMemoryDocstore
+from repositories.chroma_articles_repo import ChromaArticlesRepo
+from application.services.azure_ai_summarizer import AzureAISummarizer
+from application.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
+from application.use_cases.query_articles_use_case import QueryArticleUseCase
+from application.services.query_enhancer import QueryEnhancer
+from abstractions.articles_repo import ArticlesRepo
+from abstractions.summarizer import Summarizer
+from config.prompts import build_summary_prompt
+from config.settings import settings
+from typing import Annotated
+from fastapi import Depends
 
 ### Vectore Stores
-def build_embeddings():
+def get_embeddings():
     return HuggingFaceEmbeddings(model_name=settings.HUGGINGFACE_MODEL_NAME)
 
-def build_chroma() -> Chroma: 
+def get_chroma(embeddings: Annotated[HuggingFaceEmbeddings, Depends(get_embeddings)]) -> Chroma: 
     return Chroma(
         collection_name=settings.ARTICLES_COLLECTION_NAME,
-        embedding_function=build_embeddings(),
+        embedding_function=embeddings,
         persist_directory=settings.CHROMA_PERSIST_DIRECTORY
     )
 
-_vector_store: FAISS | None = None
-
-def build_faiss() -> FAISS:
-    global _vector_store
-    if _vector_store is None:
-        embeddings = build_embeddings()
-        embedding_dim = 384
-        index = faiss.IndexFlatL2(embedding_dim)
-
-        _vector_store = FAISS(
-            embedding_function=embeddings,
-            index=index,
-            docstore=InMemoryDocstore(),
-            index_to_docstore_id={},
-        )
-        
-    return _vector_store
-
-def build_articles_repo() -> ArticlesRepo:
-    repo: ArticlesRepo
-    if settings.USE_CHROMA_DB:
-        vector_store = build_chroma()
-        repo = ChromaArticlesRepo(vector_store)
-    else:
-        vector_store = build_faiss()
-        repo = FaissArticlesRepo(vector_store)
-
-    return repo
-
+def get_articles_repo(
+    chroma_vectore_store: Annotated[Chroma, Depends(get_chroma)],
+) -> ArticlesRepo:
+    return ChromaArticlesRepo(chroma_vectore_store)
 
 ### LLM
-def build_llm() -> AzureChatOpenAI:
+def get_llm() -> AzureChatOpenAI:
     return AzureChatOpenAI(
         azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
         azure_deployment=settings.AZURE_OPENAI_DEPLOYMENT_NAME,
@@ -66,26 +38,23 @@ def build_llm() -> AzureChatOpenAI:
         temperature=0.3
     )
 
-def build_query_enhancer():
-    llm = build_llm() 
-
+def get_query_enhancer(llm: Annotated[AzureChatOpenAI, Depends(get_llm)]):
     return QueryEnhancer(llm)
 
-def build_summarizer() -> Summarizer:
-    llm = build_llm()    
+def get_summarizer(llm: Annotated[AzureChatOpenAI, Depends(get_llm)]) -> Summarizer:
     prompt = build_summary_prompt()
     
     return AzureAISummarizer(llm, prompt)
 
-### Services
-def get_use_case(is_url_input: bool) -> UseCase:
-    repo = build_articles_repo()
+### Services    
+def get_query_articles_user_case(
+        articles_repo: Annotated[ArticlesRepo, Depends(get_articles_repo)],
+        query_enhancer: Annotated[QueryEnhancer, Depends(get_query_enhancer)]
+) -> QueryArticleUseCase:
+    return QueryArticleUseCase(articles_repo, query_enhancer)
 
-    if is_url_input:
-        summarizer = build_summarizer()
-
-        return SummarizeArticlesUseCase(repo, summarizer)
-    else:
-        query_enhancer = build_query_enhancer()
-
-        return QueryArticleUseCase(repo, query_enhancer)
+def get_summarize_articles_user_case(
+        articles_repo: Annotated[ArticlesRepo, Depends(get_articles_repo)],
+        summarizer: Annotated[Summarizer, Depends(get_summarizer)]
+) -> SummarizeArticlesUseCase:
+    return SummarizeArticlesUseCase(articles_repo, summarizer)

@@ -12,3 +12,7 @@ langchain-chroma
 langchain-huggingface
 langchain-community
 faiss-cpu
+fastapi 
+uvicorn
+pytest
+pytest-asyncio
