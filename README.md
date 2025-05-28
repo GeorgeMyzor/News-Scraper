@@ -15,7 +15,7 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
 
 1. Clone the repository:
    ```bash
-   git clone [<your-repo-url>](https://github.com/GeorgeMyzor/News-Scrapper.git)
+   git clone https://github.com/GeorgeMyzor/News-Scrapper.git
    cd <your-repo-folder>
    ```
    
