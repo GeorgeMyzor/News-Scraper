@@ -1,0 +1,14 @@
+langchain
+langsmith
+chromadb
+huggingface-hub
+pydantic-settings
+pydantic
+openai
+httpx
+beautifulsoup4
+langchain[openai]
+langchain-chroma
+langchain-huggingface
+langchain-community
+faiss-cpu

@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Main",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.entrypoints.cli",
+      "justMyCode": true
+    }
+  ]
+}
