@@ -1,8 +1,9 @@
+import faiss
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import AzureChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
 from src.repositories.chroma_articles_repo import ChromaArticlesRepo
+from src.repositories.faiss_articles_repo import FaissArticlesRepo
 from src.application.services.azure_ai_summarizer import AzureAISummarizer
 from src.application.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
 from src.application.use_cases.query_articles_use_case import QueryArticleUseCase
@@ -12,8 +13,10 @@ from src.abstractions.articles_repo import ArticlesRepo
 from src.abstractions.summarizer import Summarizer
 from src.config.prompts import build_summary_prompt
 from src.config.settings import settings
+from langchain_community.vectorstores import FAISS
+from langchain_community.docstore import InMemoryDocstore
 
-### Database
+### Vectore Stores
 def build_embeddings():
     return HuggingFaceEmbeddings(model_name=settings.HUGGINGFACE_MODEL_NAME)
 
@@ -24,10 +27,34 @@ def build_chroma() -> Chroma:
         persist_directory=settings.CHROMA_PERSIST_DIRECTORY
     )
 
-def build_articles_repo() -> ArticlesRepo:
-    vector_store = build_chroma()
+_vector_store: FAISS | None = None
 
-    return ChromaArticlesRepo(vector_store)
+def build_faiss() -> FAISS:
+    global _vector_store
+    if _vector_store is None:
+        embeddings = build_embeddings()
+        embedding_dim = 384
+        index = faiss.IndexFlatL2(embedding_dim)
+
+        _vector_store = FAISS(
+            embedding_function=embeddings,
+            index=index,
+            docstore=InMemoryDocstore(),
+            index_to_docstore_id={},
+        )
+        
+    return _vector_store
+
+def build_articles_repo() -> ArticlesRepo:
+    repo: ArticlesRepo
+    if settings.USE_CHROMA_DB:
+        vector_store = build_chroma()
+        repo = ChromaArticlesRepo(vector_store)
+    else:
+        vector_store = build_faiss()
+        repo = FaissArticlesRepo(vector_store)
+
+    return repo
 
 
 ### LLM
@@ -36,6 +63,7 @@ def build_llm() -> AzureChatOpenAI:
         azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
         azure_deployment=settings.AZURE_OPENAI_DEPLOYMENT_NAME,
         openai_api_version=settings.AZURE_OPENAI_API_VERSION,
+        temperature=0.3
     )
 
 def build_query_enhancer():

@@ -1,6 +1,7 @@
 from src.abstractions.articles_repo import ArticlesRepo
 from src.abstractions.use_case import UseCase
 from src.application.services.query_enhancer import QueryEnhancer
+from src.config.settings import settings
 
 class QueryArticleUseCase(UseCase):
     """
@@ -25,7 +26,13 @@ class QueryArticleUseCase(UseCase):
             print("No similar articles found.")
             return
 
-        for i, (doc, score) in enumerate(results, start=1):
+        filtered = [(doc, score) for doc, score in results if score < settings.RELEVANCE_SCORE_THRESHOLD]
+
+        if not filtered:
+            print("No relevant articles found with acceptable score.")
+            return
+        
+        for i, (doc, score) in enumerate(filtered, start=1):
             print(f"\nResult {i}:")
             print(f"Score: {score:.4f}")
             print(f"Title: {doc.metadata.get('headline', '[No title]')}")

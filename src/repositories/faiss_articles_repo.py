@@ -3,15 +3,16 @@ from langchain_chroma import Chroma
 from src.abstractions.articles_repo import ArticlesRepo
 from src.domain.article_data import ArticleData
 from typing import List, Tuple
+from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain_community.vectorstores import FAISS
 
-class ChromaArticlesRepo(ArticlesRepo):
+class FaissArticlesRepo(ArticlesRepo):
     """
     Repository for storing and querying articles using Chroma vector store.
     This class implements the ArticlesRepo interface and provides methods
     to save articles and perform similarity searches.
     """
-
-    def __init__(self, vector_store: Chroma) -> None:
+    def __init__(self, vector_store: FAISS) -> None:
         self.vector_store = vector_store
 
     async def save_async(self, articles: List[ArticleData]) -> None:
@@ -41,7 +42,7 @@ class ChromaArticlesRepo(ArticlesRepo):
                 metadata={
                     "headline": article.headline,
                     "summary": article.summary,
-                    "topics": ','.join(article.topics),
+                    "topics": article.topics,
                     "content": article.content,
                     "political_bias": article.political_bias,
                 },
@@ -56,7 +57,7 @@ class ChromaArticlesRepo(ArticlesRepo):
             query (str): The search query to find similar articles.
         Returns:
             List[Tuple[Document, float]]: List of tuples containing Document and similarity score.
-        """                
+        """ 
         kwargs = {"k": 5}
         return await self.vector_store.asimilarity_search_with_score(query, **kwargs)
     

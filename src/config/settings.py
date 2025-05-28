@@ -13,6 +13,11 @@ class Settings(BaseSettings):
 
     HUGGINGFACE_MODEL_NAME: str
 
+    USE_CHROMA_DB: bool
+    USE_DETERMINISTIC_QUERY: bool
+
+    RELEVANCE_SCORE_THRESHOLD: float
+
     model_config = ConfigDict(extra="ignore")
 
 settings = Settings()
