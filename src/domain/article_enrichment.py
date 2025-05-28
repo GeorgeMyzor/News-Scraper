@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel, Field
 
-class ArticleEnriched(BaseModel):
+class ArticleEnrichment(BaseModel):
     """
     Represents the enriched data structure for an article, including its title, content,
     AI generated summary and topics, and political bias.

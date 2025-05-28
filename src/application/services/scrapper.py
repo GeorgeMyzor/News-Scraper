@@ -38,4 +38,4 @@ async def scrap_article_async(url: str) -> Tuple[Optional[str], str]:
         paragraphs = soup.find_all('p')
         content = "\n".join(p.get_text(strip=True) for p in paragraphs) if paragraphs else "No article content found"
 
-    return title, content
+    return title.strip(), content.strip()

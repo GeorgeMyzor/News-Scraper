@@ -1,9 +1,9 @@
 from src.abstractions.articles_repo import ArticlesRepo
-from src.abstractions.use_case import UseCase
 from src.application.services.query_enhancer import QueryEnhancer
-from src.config.settings import settings
+from src.application.models.related_article_dto import RelatedArticleDTO
+from src.application.mappers.article_to_article_dto_mapper import map_articles_from_vector_db
 
-class QueryArticleUseCase(UseCase):
+class QueryArticleUseCase():
     """
     Use case for querying articles based on a search query.
     """
@@ -11,7 +11,7 @@ class QueryArticleUseCase(UseCase):
         self.repo = repo
         self.query_enhancer = query_enhancer
 
-    async def process_async(self, query: str) -> None:
+    async def __call__(self, query: str) -> list[RelatedArticleDTO]:
         """
         Process the query to find similar articles.
         This method enhances the query using the QueryEnhancer service
@@ -21,21 +21,8 @@ class QueryArticleUseCase(UseCase):
         """
         query = await self.query_enhancer.enchance_async(query)
         results = await self.repo.query_async(query)
-    
-        if not results:
-            print("No similar articles found.")
-            return
 
-        filtered = [(doc, score) for doc, score in results if score < settings.RELEVANCE_SCORE_THRESHOLD]
+        articles = map_articles_from_vector_db(results)
 
-        if not filtered:
-            print("No relevant articles found with acceptable score.")
-            return
-        
-        for i, (doc, score) in enumerate(filtered, start=1):
-            print(f"\nResult {i}:")
-            print(f"Score: {score:.4f}")
-            print(f"Title: {doc.metadata.get('headline', '[No title]')}")
-
-
+        return articles
     

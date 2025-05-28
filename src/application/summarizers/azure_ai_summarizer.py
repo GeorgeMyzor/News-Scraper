@@ -2,17 +2,11 @@ import asyncio
 from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 
-from src.domain.article_enrichment import ArticleEnrichment
-from src.domain.article import Article
+from domain.article_enrichment import ArticleEnrichment
+from domain.article import Article
 from src.abstractions.summarizer import Summarizer
-from langsmith import traceable
 
-@traceable
 class AzureAISummarizer(Summarizer):
-    """
-    Summarizes articles using an Azure OpenAI LLM.
-    Uses a structured output schema to enrich the article data.
-    """
     def __init__(
         self,
         llm: AzureChatOpenAI,
