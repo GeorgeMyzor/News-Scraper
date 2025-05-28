@@ -21,7 +21,7 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
    
 2. Set up a virtual environment:
    ```bash
-   python3 -m venv venv
+   python -m venv venv
    source venv/bin/activate  # On Windows: .\venv\Scripts\activate
    ```
    
@@ -42,7 +42,7 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
    Run the CLI script:
 
   ```bash
-  python src/entrypoints/cli.py
+  python -m src.entrypoints.cli
   ```
 
   The script will prompt you to enter a URL to scrape or a query to search relevant news.
