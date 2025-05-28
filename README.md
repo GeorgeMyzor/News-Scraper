@@ -11,6 +11,13 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
 - Stores data in Chroma/FAISS vector database for efficient similarity search  
 - Clean Architecture-inspired code structure for maintainability  
 
+## Requirements
+- Python 3.13
+
+- API keys for Azure OpenAI (see .env.example)
+
+- Dependencies listed in requirements.txt
+  
 ## Installation
 
 1. Clone the repository:
@@ -46,13 +53,6 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
   ```
 
   The script will prompt you to enter a URL to scrape or a query to search relevant news.
-
-## Requirements
-- Python 3.13
-
-- API keys for Azure OpenAI and LangSmith (see .env.example)
-
-- Dependencies listed in requirements.txt
 
 ## Configuration
 The .env file must include the following variables:
