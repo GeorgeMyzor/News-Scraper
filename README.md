@@ -16,13 +16,13 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
 1. Clone the repository:
    ```bash
    git clone https://github.com/GeorgeMyzor/News-Scrapper.git
-   cd <your-repo-folder>
+   cd News-Scrapper
    ```
    
 2. Set up a virtual environment:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   .\venv\Scripts\activate # On Windows: source venv/bin/activate
    ```
    
 3. Install dependencies:
