@@ -7,6 +7,7 @@ class RelatedArticleDTO(BaseModel):
     summary, topics, and political bias.
     """
     headline: Optional[str] = None
+    content: str
     summary: str
     topics: Optional[list[str]] = None
     political_bias: Optional[str] = None
@@ -35,6 +36,7 @@ class RelatedArticleDTO(BaseModel):
         return cls(
             headline=metadata.get("headline"),
             summary=metadata.get("summary", ""),
+            content=metadata.get("content", ""),
             topics=topics,
             political_bias=metadata.get("political_bias"),
             score=score

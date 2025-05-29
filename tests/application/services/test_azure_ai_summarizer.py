@@ -2,8 +2,8 @@ import pytest
 import asyncio
 from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from application.services.azure_ai_summarizer import AzureAISummarizer
-from domain.article import Article
+from application.services.azure_ai_summarizer1 import AzureAISummarizer
+from domain.article_query import ArticleQuery
 from config.settings import settings
 from config.prompts import build_summary_prompt
 
@@ -31,7 +31,7 @@ async def test_summarize_single_article_real_llm():
     assert isinstance(result, list)
     assert len(result) == 1
     article = result[0]
-    assert isinstance(article, Article)
+    assert isinstance(article, ArticleQuery)
     assert article.headline == "Breaking News"
     assert article.summary is not None
     assert hasattr(article, "topics")  # Depending on your Article model
@@ -60,5 +60,5 @@ async def test_summarize_multiple_articles_real_llm():
     assert isinstance(results, list)
     assert len(results) == 2
     for article in results:
-        assert isinstance(article, Article)
+        assert isinstance(article, ArticleQuery)
         assert article.summary is not None

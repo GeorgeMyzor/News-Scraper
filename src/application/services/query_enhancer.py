@@ -1,7 +1,7 @@
 from langchain_openai import AzureChatOpenAI
-from config.prompts import build_query_enhancement_prompt
 from langsmith import traceable
 from config.settings import settings
+from langchain_core.output_parsers import StrOutputParser
 import logging
 
 @traceable
@@ -12,9 +12,11 @@ class QueryEnhancer():
     """
     def __init__(
         self,
-        llm: AzureChatOpenAI
+        llm: AzureChatOpenAI,
+        prompt: str
     ):
         self.llm = llm
+        self.prompt = prompt
 
     async def enhance_async(self, query: str) -> str: 
         """
@@ -28,11 +30,10 @@ class QueryEnhancer():
             return query    
         
         logging.info("Enhancing query: %s", query)
+                
+        chain = self.prompt | self.llm | StrOutputParser()
+        result = await chain.ainvoke({"userQuery": query})
         
-        promt = build_query_enhancement_prompt()
-        message = await promt.ainvoke(query)
-        result = await self.llm.ainvoke(message)
-        
-        logging.info("Enhanced query: %s", result.content)
+        logging.info("Enhanced query: %s", result)
 
-        return result.content
+        return result

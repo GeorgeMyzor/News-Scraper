@@ -1,20 +1,20 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from domain.article import Article
+from domain.article_query import ArticleQuery
 from langchain_core.documents import Document
 from repositories.chroma_articles_repo import ChromaArticlesRepo
 
 @pytest.fixture
 def sample_articles():
     return [
-        Article(
+        ArticleQuery(
             headline="Title A",
             summary="Summary A",
             content="Full article content A.",
             topics=["politics", "world"],
             political_bias="center"
         ),
-        Article(
+        ArticleQuery(
             headline="Title B",
             summary="Summary B",
             content="Full article content B.",

@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, patch
 
 from application.models.article_summary_dto import ArticleSummaryDTO
 from application.use_cases.summarize_articles_use_case import SummarizeArticlesUseCase
-from domain.article import Article
+from domain.article_query import ArticleQuery
 
 
 @pytest.mark.asyncio
@@ -19,8 +19,8 @@ async def test_summarize_articles_use_case_happy_path(mock_scrap_articles):
     # Mock summarizer with summarize_async method
     mock_summarizer = AsyncMock()
     # Summarizer returns list of Article domain objects
-    article1 = Article(headline="Title 1", content="Summary 1", summary="This is a summary of article 1.")
-    article2 = Article(headline="Title 2", content="Summary 2", summary="This is a summary of article 2.")
+    article1 = ArticleQuery(headline="Title 1", content="Summary 1", summary="This is a summary of article 1.")
+    article2 = ArticleQuery(headline="Title 2", content="Summary 2", summary="This is a summary of article 2.")
     mock_summarizer.summarize_async.return_value = [article1, article2]
     
     # Mock repo with save_async method
@@ -71,7 +71,7 @@ async def test_summarize_articles_use_case_partial_failure_in_scrap(mock_scrap_a
 
     mock_summarizer = AsyncMock()
     # Summarizer should only get valid articles (depends on your logic, adjust accordingly)
-    mock_summarizer.summarize_async.return_value = [Article(headline="Valid", content="Content", summary="Summary")]
+    mock_summarizer.summarize_async.return_value = [ArticleQuery(headline="Valid", content="Content", summary="Summary")]
 
     mock_repo = AsyncMock()
 
@@ -120,7 +120,7 @@ async def test_summarize_articles_use_case_repo_raises_exception(mock_scrap_arti
     mock_scrap_articles.return_value = ["article content"]
 
     mock_summarizer = AsyncMock()
-    article = Article(headline="Headline", content="Summary", summary="This is a summary.")
+    article = ArticleQuery(headline="Headline", content="Summary", summary="This is a summary.")
     mock_summarizer.summarize_async.return_value = [article]
 
     mock_repo = AsyncMock()
