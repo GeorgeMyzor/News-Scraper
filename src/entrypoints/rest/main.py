@@ -18,6 +18,7 @@ app.include_router(articles.router)
 
 exception_container(app)
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("entrypoints.rest.main:app", host="127.0.0.1", port=8001, reload=False)
+# Dev only
+#if __name__ == "__main__":
+#    import uvicorn
+#    uvicorn.run("entrypoints.rest.main:app", host="127.0.0.1", port=8001, reload=False)
