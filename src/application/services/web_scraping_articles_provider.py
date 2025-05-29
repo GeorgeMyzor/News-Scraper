@@ -34,7 +34,7 @@ class WebScrapingArticlesProvider(ArticlesProvider):
         """
         logging.info("Scraping article from URL: %s", url)
 
-        async with httpx.AsyncClient(timeout=10) as client:
+        async with httpx.AsyncClient(timeout=30) as client:
             response = await client.get(url)
             response.raise_for_status()
 
