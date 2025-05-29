@@ -2,7 +2,6 @@ from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from abstractions.articles_repo import ArticlesRepo
 from domain.article_query import ArticleQuery
-from typing import List, Tuple
 
 class ChromaArticlesRepo(ArticlesRepo):
     """
@@ -14,7 +13,7 @@ class ChromaArticlesRepo(ArticlesRepo):
     def __init__(self, vector_store: Chroma) -> None:
         self.vector_store = vector_store
 
-    async def save_async(self, articles: List[ArticleQuery]) -> None:
+    async def save_async(self, articles: list[ArticleQuery]) -> None:
         """
         Saves a list of ArticleData objects to the vector store.
         Args:
@@ -24,7 +23,7 @@ class ChromaArticlesRepo(ArticlesRepo):
 
         await self.vector_store.aadd_documents(documents)
 
-    def _articles_to_documents(self, articles: List[ArticleQuery]) -> List[Document]:
+    def _articles_to_documents(self, articles: list[ArticleQuery]) -> list[Document]:
         """
         Converts a list of ArticleData objects to a list of Document objects
         for storage in the vector store.
@@ -49,7 +48,7 @@ class ChromaArticlesRepo(ArticlesRepo):
             documents.append(doc)
         return documents
     
-    async def query_async(self, query: str) -> List[Tuple[Document, float]] :
+    async def query_async(self, query: str) -> list[tuple[Document, float]] :
         """
         Queries the vector store for documents similar to the given query.
         Args:

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class RelatedArticleDTO(BaseModel):
     """
     Represents the data structure for an article, including its title, content,
-    summary, topics, and political bias.
+    summary, topics, political bias, score.
     """
     headline: Optional[str] = None
     content: str

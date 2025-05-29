@@ -1,9 +1,11 @@
+import logging
+
 from abstractions.articles_repo import ArticlesRepo
 from abstractions.summarizer import Summarizer
 from abstractions.articles_provider import ArticlesProvider
 from domain.article_enriched import ArticleEnriched
 from application.models.article_summary_dto import ArticleSummaryDTO
-import logging
+
 
 class SummarizeArticlesUseCase():
     """
@@ -19,7 +21,9 @@ class SummarizeArticlesUseCase():
         """
         Process the input to summarize articles from the provided URLs.
         Args:
-            input (str): A space-separated string of URLs to scrape and summarize.
+            urls (list[str]): List of URLs to scrape and summarize articles from.
+        Returns:
+            list[ArticleSummaryDTO]: List of summarized articles.
         """
         logging.info("Executing summarize articles use case")
         

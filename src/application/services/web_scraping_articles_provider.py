@@ -1,8 +1,8 @@
 import asyncio
 import httpx
-from bs4 import BeautifulSoup
-from typing import List, Tuple, Optional
 import logging
+from bs4 import BeautifulSoup
+from typing import Optional
 
 from abstractions.articles_provider import ArticlesProvider
 
@@ -11,18 +11,26 @@ class WebScrapingArticlesProvider(ArticlesProvider):
     Implements ArticlesProvider to scrape articles from the web using HTTP requests.
     """
 
-    async def get_async(self, paths: List[str]) -> List[Tuple[Optional[str], str]]:
+    async def get_async(self, paths: list[str]) -> list[tuple[Optional[str], str]]:
         """
-        Asynchronously scrapes articles from a list of URLs.
+        Scrapes articles from the provided URLs asynchronously.
         Args:
-            paths (List[str]): A list of article URLs.
+            paths (list[str]): List of URLs to scrape articles from.
         Returns:
-            List[Tuple[Optional[str], str]]: A list of (title, content) tuples.
+            list[tuple[Optional[str], str]]: List of tuples containing the article title and content.
         """
         tasks = [self._scrap_article_async(url) for url in paths]
+        
         return await asyncio.gather(*tasks)
 
-    async def _scrap_article_async(self, url: str) -> Tuple[Optional[str], str]:
+    async def _scrap_article_async(self, url: str) -> tuple[Optional[str], str]:
+        """
+        Scrapes a single article from the given URL.
+        Args:
+            url (str): The URL of the article to scrape.
+        Returns:
+            tuple[Optional[str], str]: A tuple containing the article title and content.
+        """
         logging.info("Scraping article from URL: %s", url)
 
         async with httpx.AsyncClient(timeout=10) as client:

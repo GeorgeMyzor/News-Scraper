@@ -2,7 +2,27 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 import logging
 
+from application.exceptions.token_limit_exceeded import TokenLimitExceeded
+
 def exception_container(app: FastAPI) -> None:
+    
+    @app.exception_handler(TokenLimitExceeded)
+    async def token_limit_exception_handler(request: Request, exc: TokenLimitExceeded):
+        """
+        Exception handler for TokenLimitExceeded exceptions.
+        Args:
+            request (Request): The request object.
+            exc (TokenLimitExceeded): The exception that was raised.
+        Returns:
+            JSONResponse: A JSON response with a 422 Unprocessable Entity status code and an error message.
+        """
+        
+        logging.warning(f"Token limit exceeded: {exc}")
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={"detail": str(exc)},
+        )
+        
     @app.exception_handler(Exception)
     async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
         """
