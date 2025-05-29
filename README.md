@@ -16,13 +16,13 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
 1. Clone the repository:
    ```bash
    git clone [<your-repo-url>](https://github.com/GeorgeMyzor/News-Scrapper.git)
-   cd <your-repo-folder>
+   cd News-Scrapper
    ```
    
 2. Set up a virtual environment:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   .\venv\Scripts\activate  # On Linux: source venv/bin/activate
    ```
    
 3. Install dependencies:
@@ -42,10 +42,10 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
    Run the CLI script:
 
   ```bash
-  python -m src.entrypoints.cli
+  uvicorn entrypoints.rest.main:app --reload --app-dir src --port 8000 # Change port if already in use
   ```
 
-  The script will prompt you to enter a URL to scrape or a query to search relevant news.
+  Go to http://127.0.0.1:8000/docs and use POST /articles/summary or GET /articles/query
 
 ## Requirements
 - Python 3.13
@@ -77,5 +77,10 @@ HUGGINGFACE_MODEL_NAME="sentence-transformers/all-MiniLM-L6-v2"
 USE_CHROMA_DB=true
 USE_DETERMINISTIC_QUERY=false
 
-RELEVANCE_SCORE_THRESHOLD=1.5
+QUERY_TOKEN_LIMIT=1000
+# too low, for showcase
+CHUNK_TOKEN_LIMIT=1000 
+MAX_TOKEN_LIMIT=50000
+
+PYTHONPATH=src
 ```
