@@ -16,7 +16,7 @@ class ArticleEnriched(BaseModel):
         default=None, description="Summary that captures key points of the article."
     )
     topics: Optional[list[str]] = Field(
-        default=None, description="Two to four most relevant topics mentioned in the article.",
+        default=[], description="Two to four most relevant topics mentioned in the article.",
     )
     political_bias: Optional[str] = Field(
         default=None,

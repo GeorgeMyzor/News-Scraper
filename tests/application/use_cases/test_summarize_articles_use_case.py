@@ -37,13 +37,12 @@ def use_case(mock_repo, mock_summarizer, mock_articles_provider):
 
 @pytest.mark.asyncio
 async def test_use_case_executes_full_pipeline(use_case, mock_articles_provider, mock_summarizer, mock_repo):
+    # Arrange
     urls = ["https://example.com/article1", "https://example.com/article2"]
 
-    # Mock article scraping result
     scrapped = [("Title1", "Content1"), ("Title2", "Content2")]
     mock_articles_provider.get_async.return_value = scrapped
 
-    # Mock summarizer output
     enriched = [
         ArticleEnriched(headline="Title1", content="Content1", summary="Summary1"),
         ArticleEnriched(headline="Title2", content="Content2", summary="Summary2")
@@ -65,11 +64,14 @@ async def test_use_case_executes_full_pipeline(use_case, mock_articles_provider,
 
 @pytest.mark.asyncio
 async def test_use_case_handles_empty_url_list(use_case, mock_articles_provider, mock_summarizer, mock_repo):
+    # Arrange
     mock_articles_provider.get_async.return_value = []
     mock_summarizer.summarize_async.return_value = []
 
+    # Act
     result = await use_case([])
 
+    # Assert
     mock_articles_provider.get_async.assert_awaited_once_with([])
     mock_summarizer.summarize_async.assert_awaited_once_with([])
     mock_repo.save_async.assert_awaited_once_with([])

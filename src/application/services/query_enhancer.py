@@ -5,7 +5,7 @@ from langchain_core.output_parsers import StrOutputParser
 from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_not_exception_type
 
 from config.settings import settings
-from application.exceptions.token_limit_exceeded import TokenLimitExceeded
+from application.exceptions.token_limit_exceeded_error import TokenLimitExceededError
 from application.utils.token_limit_validator import TokenLimitValidator
 
 @traceable
@@ -27,7 +27,7 @@ class QueryEnhancer():
     @retry(
         wait=wait_exponential(multiplier=1, min=1, max=5), 
         stop=stop_after_attempt(2),
-        retry=retry_if_not_exception_type(TokenLimitExceeded)
+        retry=retry_if_not_exception_type(TokenLimitExceededError)
     )
     async def enhance_async(self, query: str) -> str: 
         """

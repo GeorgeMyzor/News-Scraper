@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from typing import Optional
 
 from abstractions.articles_provider import ArticlesProvider
+from application.exceptions.no_content_error import NoContentError
 
 class WebScrapingArticlesProvider(ArticlesProvider):
     """
@@ -46,10 +47,27 @@ class WebScrapingArticlesProvider(ArticlesProvider):
         if article_body:
             content = article_body.get_text(separator="\n", strip=True)
         else:
-            paragraphs = soup.find_all('p')
+            paragraphs = soup.find_all('p')            
             content = "\n".join(p.get_text(strip=True) for p in paragraphs) if paragraphs else "No article content found"
-
+            
+        if(not is_valid_article(content)):
+            raise NoContentError(url)
+        
         return {
             "headline": title.strip(),
             "content": content.strip()
         }
+        
+def is_valid_article(text) -> bool:
+    """
+    Validates if the scraped text is a valid article.
+    Args:
+        text (str): The text content of the article.
+    Returns:
+        bool: True if the text is a valid article, False otherwise.
+    """
+    if len(text.split()) < 100:
+        return False
+    if text.count('.') < 5:
+        return False
+    return True

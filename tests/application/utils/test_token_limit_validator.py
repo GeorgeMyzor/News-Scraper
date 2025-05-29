@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from application.utils.token_limit_validator import TokenLimitValidator
-from application.exceptions.token_limit_exceeded import TokenLimitExceeded
+from application.exceptions.token_limit_exceeded_error import TokenLimitExceededError
 from langchain_core.prompts.chat import ChatPromptValue
 from langchain_core.messages import AIMessage, HumanMessage
 
@@ -10,7 +10,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 @pytest.fixture
 def mock_encoding():
     encoding = MagicMock()
-    encoding.encode.side_effect = lambda s: s.split()  # Simulate token count by word count
+    encoding.encode.side_effect = lambda s: s.split() 
     return encoding
 
 
@@ -36,7 +36,7 @@ def test_invoke_exceeds_token_limit(mock_encoding):
             AIMessage(content="Indeed, it should fail.")
         ])
 
-        with pytest.raises(TokenLimitExceeded) as exc_info:
+        with pytest.raises(TokenLimitExceededError) as exc_info:
             validator.invoke(input)
 
         assert exc_info.value.args[0] == "Input has 11 tokens, which exceeds the limit of 3."

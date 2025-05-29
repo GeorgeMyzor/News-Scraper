@@ -15,7 +15,6 @@ async def test_query_article_use_case_returns_expected_results():
     expected_dtos = [RelatedArticleDTO(headline="Article 1", content="content", summary="test", score=0.9),
                      RelatedArticleDTO(headline="Article 2", content="content", summary="test", score=0.8)]
     
-    # Mock dependencies
     mock_repo = MagicMock()
     mock_repo.query_async = AsyncMock(return_value=fake_results)
 
