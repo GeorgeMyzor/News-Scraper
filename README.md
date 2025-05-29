@@ -1,6 +1,6 @@
-# News Scrapper
+# News Scraper
 
-News Scrapper is a Python tool that scrapes news articles from URLs, enriches them with AI-generated summaries and topic tags, and stores the processed data in a vector database (Chroma). It also supports user queries for similarity-based search to find relevant articles.
+News Scraper is a Python tool that scrapes news articles from URLs, enriches them with AI-generated summaries and topic tags, and stores the processed data in a vector database (Chroma). It also supports user queries for similarity-based search to find relevant articles.
 
 ## Features
 
@@ -22,8 +22,8 @@ News Scrapper is a Python tool that scrapes news articles from URLs, enriches th
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/GeorgeMyzor/News-Scrapper.git
-   cd News-Scrapper
+   git clone https://github.com/GeorgeMyzor/News-Scraper.git
+   cd News-Scraper
    ```
    
 2. Set up a virtual environment:
