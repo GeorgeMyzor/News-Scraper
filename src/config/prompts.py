@@ -2,13 +2,28 @@ from langchain.prompts import ChatPromptTemplate
 
 SYSTEM_SUMMARY_TEMPLATE = """
 You are a precise and concise assistant that summarizes news articles into structured data.
-Your task is to extract key information such as headline, summary, key topics, people mentioned, locations, and publication date.
-If any information is missing or cannot be inferred, return null for that field.
-Always return your answer in JSON format with clear, concise values.
+
+Your goal is to:
+- Extract key information such as headline, summary, key topics, people mentioned, locations, and publication date.
+- If any information is missing or cannot be inferred, return null for that field.
+- Always return your answer in JSON format with clear, concise values.
 """
 
+USER_CHUNK_SUMMARY_TEMPLATE = """
+Summarize the following news article chunk in 2-4 concise sentences, highlighting the main event, key people, and any outcomes or implications.
+
+Headline: {headline}
+Content: {content}
+"""
+
+def build_chunk_summary_prompt() -> ChatPromptTemplate:
+    return ChatPromptTemplate.from_messages([
+        ("system", SYSTEM_SUMMARY_TEMPLATE),
+        ("user", USER_CHUNK_SUMMARY_TEMPLATE),
+    ])
+
 USER_SUMMARY_TEMPLATE = """
-Summarize the following news article in 2-4 concise sentences, highlighting the main event, key people, and any outcomes or implications.
+Summarize the following summaries of chunks of a single article in 2-4 concise sentences, highlighting the main event, key people, and any outcomes or implications.
 
 Headline: {headline}
 Content: {content}
@@ -19,7 +34,7 @@ def build_summary_prompt() -> ChatPromptTemplate:
         ("system", SYSTEM_SUMMARY_TEMPLATE),
         ("user", USER_SUMMARY_TEMPLATE),
     ])
-
+    
 SYSTEM_QUERY_TEMPLATE = """
 You are a helpful assistant that rewrites user queries to improve their effectiveness for semantic search in a vector database.
 

@@ -3,6 +3,7 @@ from pydantic import ConfigDict
 from dotenv import load_dotenv
 
 load_dotenv()
+
 class Settings(BaseSettings):
     AZURE_OPENAI_API_KEY: str
     AZURE_OPENAI_ENDPOINT: str
@@ -24,7 +25,9 @@ class Settings(BaseSettings):
     USE_CHROMA_DB: bool
     USE_DETERMINISTIC_QUERY: bool
 
-    RELEVANCE_SCORE_THRESHOLD: float
+    QUERY_TOKEN_LIMIT: int
+    CHUNK_TOKEN_LIMIT: int
+    MAX_TOKEN_LIMIT: int
 
     model_config = ConfigDict(extra="ignore")
 

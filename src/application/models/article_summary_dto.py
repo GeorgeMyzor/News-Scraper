@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class ArticleSummaryDTO(BaseModel):
     """
-    Represents the data structure for an article, including its title, content,
+    Represents the data structure for an article, including its headline,
     summary, topics, and political bias.
     """
     headline: Optional[str]

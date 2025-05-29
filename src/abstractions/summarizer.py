@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.article import Article
+from domain.article_query import ArticleQuery
 
 class Summarizer(ABC):
     """
@@ -8,5 +8,5 @@ class Summarizer(ABC):
     It should be implemented by any concrete summarizer class.
     """
     @abstractmethod
-    async def summarize_async(self, headline: str, content: str) -> list[Article]:
+    async def summarize_async(self, headline: str, content: str) -> list[ArticleQuery]:
         pass

@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, patch, Mock
-from application.services.scrapper import scrap_articles_async
+from application.services.web_scraping_articles_provider import scrap_articles_async
 
 @pytest.mark.asyncio
 @patch("application.services.scrapper.httpx.AsyncClient.get")
