@@ -4,12 +4,44 @@ News Scraper is a Python tool that scrapes news articles from URLs, enriches the
 
 ## Features
 
-- Scrapes news articles from provided URLs  
-- Uses ChatGPT 4o-mini for AI-powered summarization with structured output  
-- Generates embeddings via Hugging Face models
-- Enhances user query for more efficient search
-- Stores data in Chroma/FAISS vector database for efficient similarity search  
-- Clean Architecture-inspired code structure for maintainability  
+- **News Article Scraping**  
+  Automatically extracts full-text content from user-provided URLs.
+
+- **AI-Powered Summarization**  
+  Leverages ChatGPT-4o mini to generate high-quality, structured summaries of articles.
+
+- **Semantic Embedding Generation**  
+  Uses Hugging Face models to convert content into vector embeddings for semantic search.
+
+- **Query Enhancement**  
+  Improves and refines user queries to increase the accuracy and relevance of search results.
+
+- **Vector Storage with Chroma**  
+  Stores embeddings in a Chroma vector database to enable efficient similarity-based retrieval.
+
+- **Clean Architecture Design**  
+  Implements a modular and maintainable codebase inspired by Clean Architecture principles.
+
+- **Scalable Summarization with Splitter + Map-Reduce**  
+  Handles large or lengthy articles by splitting and summarizing content in parallel, then aggregating results.
+
+## Project Structure
+
+This project follows a Clean Architecture-inspired structure for maintainability, scalability, and clear separation of concerns.
+
+```text
+src/
+├── abstractions/         # Interfaces, abstract base classes, and dependency injection
+├── application/          # Business logic: services, use-cases, and custom exceptions
+├── config/               # Configuration files: logging, prompts, and application settings
+├── domain/               # Core domain models (e.g., Article)
+├── entrypoints/          # REST API routers and external interfaces
+├── repositories/         # Implementation of data access and persistence layers
+```
+The main entry point of the application is:
+```
+src/entrypoints/rest/main.py
+```
 
 ## Requirements
 - Python 3.13
