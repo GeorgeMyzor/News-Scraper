@@ -12,7 +12,7 @@ from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_not_e
 from domain.article_enriched import ArticleEnriched
 from abstractions.summarizer import Summarizer
 from application.utils.token_limit_validator import TokenLimitValidator
-from application.exceptions.token_limit_exceeded import TokenLimitExceeded
+from application.exceptions.token_limit_exceeded_error import TokenLimitExceededError
 
 class GraphState(TypedDict):
     """State for the summarization graph."""
@@ -37,7 +37,7 @@ class AzureAISummarizer(Summarizer):
         summary_prompt: ChatPromptTemplate,
         chunk_summary_prompt: ChatPromptTemplate,
         token_text_splitter: TokenTextSplitter,
-        token_limit_validator: TokenLimitValidator
+        token_limit_validator: TokenLimitValidator,
     ):        
         self.text_splitter = token_text_splitter
         
@@ -46,9 +46,17 @@ class AzureAISummarizer(Summarizer):
         
         self.graph = self._build_graph()
 
-    def _build_chain(self, prompt, toke_limit_validator, llm):
-        """Builds a chain for summarization using the provided prompt and language model."""
-        return prompt | toke_limit_validator | llm | StrOutputParser()
+    def _build_chain(self, prompt, token_limit_validator, llm):
+        """
+        Builds a chain for summarization using the provided prompt, token limit validator, and LLM.
+        Args:
+            prompt (ChatPromptTemplate): The prompt template for summarization.
+            token_limit_validator (TokenLimitValidator): Validator to check token limits.
+            llm (BaseChatModel): The language model to use for summarization.
+        Returns:
+            Chain: A chain that processes the summarization task.
+        """
+        return prompt | token_limit_validator | llm | StrOutputParser()
     
     def _build_graph(self):
         """Builds the state graph for summarization."""
@@ -65,7 +73,7 @@ class AzureAISummarizer(Summarizer):
         @retry(
             wait=wait_exponential(multiplier=1, min=1, max=5), 
             stop=stop_after_attempt(2),
-            retry=retry_if_not_exception_type(TokenLimitExceeded)
+            retry=retry_if_not_exception_type(TokenLimitExceededError)
         )
         async def summarize_chunks_node(state: GraphState) -> GraphState:
             """Summarizes chunks of the article in batch."""
@@ -77,7 +85,7 @@ class AzureAISummarizer(Summarizer):
         @retry(
             wait=wait_exponential(multiplier=1, min=1, max=5), 
             stop=stop_after_attempt(2),
-            retry=retry_if_not_exception_type(TokenLimitExceeded)
+            retry=retry_if_not_exception_type(TokenLimitExceededError)
         )
         async def summarize_all_node(state: GraphState) -> GraphState:
             """Combines chunk summaries into a final enriched article."""            

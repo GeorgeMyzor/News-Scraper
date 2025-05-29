@@ -1,12 +1,8 @@
 from langchain.prompts import ChatPromptTemplate
 
-SYSTEM_SUMMARY_TEMPLATE = """
-You are a precise and concise assistant that summarizes news articles into structured data.
-
-Your goal is to:
-- Extract key information such as headline, summary, key topics, people mentioned, locations, and publication date.
-- If any information is missing or cannot be inferred, return null for that field.
-- Always return your answer in JSON format with clear, concise values.
+SYSTEM_CHUNK_SUMMARY_TEMPLATE = """
+You are a precise and concise assistant that summarizes chunks of news article.
+Providing only summary of the chunk as a result.
 """
 
 USER_CHUNK_SUMMARY_TEMPLATE = """
@@ -18,12 +14,21 @@ Content: {content}
 
 def build_chunk_summary_prompt() -> ChatPromptTemplate:
     return ChatPromptTemplate.from_messages([
-        ("system", SYSTEM_SUMMARY_TEMPLATE),
+        ("system", SYSTEM_CHUNK_SUMMARY_TEMPLATE),
         ("user", USER_CHUNK_SUMMARY_TEMPLATE),
     ])
 
+SYSTEM_SUMMARY_TEMPLATE = """
+You are a precise and concise assistant that summarizes news articles into structured data.
+
+Your goal is to:
+- If any information is missing or cannot be inferred, return null for that field.
+- Always return your answer in JSON format with clear, concise values.
+"""
+
 USER_SUMMARY_TEMPLATE = """
 Summarize the following summaries of chunks of a single article in 2-4 concise sentences, highlighting the main event, key people, and any outcomes or implications.
+
 
 Headline: {headline}
 Content: {content}

@@ -1,49 +1,95 @@
 import pytest
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from application.services.query_enhancer import QueryEnhancer
-from langchain_openai import AzureChatOpenAI
-from config.settings import settings
+from application.exceptions.token_limit_exceeded_error import TokenLimitExceededError
 
 
-@pytest.mark.integration
+@pytest.fixture
+def mock_llm():
+    llm = MagicMock()
+    llm.__or__.return_value = llm 
+    return llm
+
+@pytest.fixture
+def mock_prompt():
+    prompt = MagicMock()
+    prompt.__or__.return_value = prompt
+    return prompt
+
+@pytest.fixture
+def mock_token_limit_validator():
+    validator = MagicMock()
+    validator.__or__.return_value = validator
+    return validator
+
+@pytest.fixture
+def enhancer(mock_llm, mock_prompt, mock_token_limit_validator):
+    return QueryEnhancer(llm=mock_llm, prompt=mock_prompt, token_limit_validator=mock_token_limit_validator)
+
+
 @pytest.mark.asyncio
-async def test_query_enhancer_returns_enhanced_query():
+async def test_enhance_async_returns_original_if_deterministic(enhancer):
     # Arrange
-    llm = AzureChatOpenAI(
-        azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-        azure_deployment=settings.AZURE_OPENAI_DEPLOYMENT_NAME,
-        openai_api_version=settings.AZURE_OPENAI_API_VERSION,
-        temperature=0.3
-    )
-    enhancer = QueryEnhancer(llm)
-
-    original_query = "climate change effects"
-
-    # Act
-    enhanced_query = await enhancer.enhance_async(original_query)
+    with patch("config.settings.settings.USE_DETERMINISTIC_QUERY", True):
+        # Act
+        result = await enhancer.enhance_async("original query")
 
     # Assert
-    assert isinstance(enhanced_query, str)
-    assert len(enhanced_query) > 0
-    assert enhanced_query != original_query or settings.USE_DETERMINISTIC_QUERY is True
+    assert result == "original query"
 
-@pytest.mark.integration
+
 @pytest.mark.asyncio
-async def test_query_enhancer_deterministic_mode(monkeypatch):
+async def test_enhance_async_calls_chain_and_returns_result(enhancer, mock_llm, mock_prompt, mock_token_limit_validator):
     # Arrange
-    monkeypatch.setattr(settings, "USE_DETERMINISTIC_QUERY", True)
+    chain = MagicMock()
+    chain.ainvoke = AsyncMock(return_value="enhanced query")
 
-    llm = AzureChatOpenAI(
-        azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-        azure_deployment=settings.AZURE_OPENAI_DEPLOYMENT_NAME,
-        openai_api_version=settings.AZURE_OPENAI_API_VERSION,
-        temperature=0.3
-    )
-    enhancer = QueryEnhancer(llm)
-    query = "AI in healthcare"
+    mock_prompt.__or__.return_value = mock_token_limit_validator
+    mock_token_limit_validator.__or__.return_value = mock_llm
+    mock_llm.__or__.return_value = chain
 
-    # Act
-    enhanced = await enhancer.enhance_async(query)
+    with patch("config.settings.settings.USE_DETERMINISTIC_QUERY", False):
+        # Act
+        result = await enhancer.enhance_async("user input")
 
     # Assert
-    assert enhanced == query
+    assert result == "enhanced query"
+    chain.ainvoke.assert_called_once_with({"userQuery": "user input"})
+
+
+@pytest.mark.asyncio
+async def test_enhance_async_retries_on_exception(enhancer, mock_llm, mock_prompt, mock_token_limit_validator):
+    # Arrange
+    chain = MagicMock()
+    chain.ainvoke = AsyncMock(side_effect=[Exception("Temporary failure"), "fixed output"])
+
+    mock_prompt.__or__.return_value = mock_token_limit_validator
+    mock_token_limit_validator.__or__.return_value = mock_llm
+    mock_llm.__or__.return_value = chain
+
+    with patch("config.settings.settings.USE_DETERMINISTIC_QUERY", False):
+        # Act
+        result = await enhancer.enhance_async("resilient query")
+
+    # Assert
+    assert result == "fixed output"
+    assert chain.ainvoke.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_enhance_async_does_not_retry_on_token_limit_exceeded(enhancer, mock_llm, mock_prompt, mock_token_limit_validator):
+    # Arrange
+    chain = MagicMock()
+    chain.ainvoke = AsyncMock(side_effect=TokenLimitExceededError("Too long", max_tokens=4096))
+
+    mock_prompt.__or__.return_value = mock_token_limit_validator
+    mock_token_limit_validator.__or__.return_value = mock_llm
+    mock_llm.__or__.return_value = chain
+
+    with patch("config.settings.settings.USE_DETERMINISTIC_QUERY", False):
+        # Act & Assert
+        with pytest.raises(TokenLimitExceededError):
+            await enhancer.enhance_async("token bomb")
+
+    assert chain.ainvoke.call_count == 1

@@ -5,6 +5,7 @@ from abstractions.summarizer import Summarizer
 from abstractions.articles_provider import ArticlesProvider
 from domain.article_enriched import ArticleEnriched
 from application.models.article_summary_dto import ArticleSummaryDTO
+from application.utils.url_validator import validate_urls
 
 
 class SummarizeArticlesUseCase():
@@ -25,6 +26,8 @@ class SummarizeArticlesUseCase():
         Returns:
             list[ArticleSummaryDTO]: List of summarized articles.
         """
+        validate_urls(urls)
+        
         logging.info("Executing summarize articles use case")
         
         scrapped_articles = await self.articles_provider.get_async(urls)
