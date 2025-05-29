@@ -10,10 +10,10 @@ async def test_query_article_use_case_returns_expected_results():
     # Arrange
     fake_query = "climate change"
     enhanced_query = "climate change impact"
-    fake_results = [(SimpleNamespace(**{"metadata": {"headline": "Article 1", "summary": "test"}}), 0.9),
-                    (SimpleNamespace(**{"metadata": {"headline": "Article 2", "summary": "test"}}), 0.8)]
-    expected_dtos = [RelatedArticleDTO(headline="Article 1", summary="test", score=0.9),
-                     RelatedArticleDTO(headline="Article 2", summary="test", score=0.8)]
+    fake_results = [(SimpleNamespace(**{"metadata": {"headline": "Article 1",  "content":"content", "summary": "test"}}), 0.9),
+                    (SimpleNamespace(**{"metadata": {"headline": "Article 2",  "content":"content", "summary": "test"}}), 0.8)]
+    expected_dtos = [RelatedArticleDTO(headline="Article 1", content="content", summary="test", score=0.9),
+                     RelatedArticleDTO(headline="Article 2", content="content", summary="test", score=0.8)]
     
     # Mock dependencies
     mock_repo = MagicMock()
