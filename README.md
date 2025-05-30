@@ -16,6 +16,9 @@ News Scraper is a Python tool that scrapes news articles from URLs, enriches the
 - **Query Enhancement**  
   Improves and refines user queries to increase the accuracy and relevance of search results.
 
+- **LangChain LangGraph LangSmith**  
+  LLM helper libraries used for creating reusable chains, robust executable graphs and LLM related metrics.
+
 - **Vector Storage with Chroma**  
   Stores embeddings in a Chroma vector database to enable efficient similarity-based retrieval.
 
@@ -24,6 +27,7 @@ News Scraper is a Python tool that scrapes news articles from URLs, enriches the
 
 - **Scalable Summarization with Splitter + Map-Reduce**  
   Handles large or lengthy articles by splitting and summarizing content in parallel, then aggregating results.
+
 
 ## Project Structure
 
