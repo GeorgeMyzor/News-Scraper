@@ -21,7 +21,7 @@ def exception_container(app: FastAPI) -> None:
             exc (HTTPStatusError): The exception that was raised.
         Returns:
             JSONResponse: A JSON response with a 422 Unprocessable Entity status code and an error message."""
-        # Log the URL that caused the error, if available
+            
         url = str(exc.request.url) if exc.request else "Unknown URL"
         
         logging.warning(f"No content extracted from URL: {url} - Status: {exc.response.status_code}")

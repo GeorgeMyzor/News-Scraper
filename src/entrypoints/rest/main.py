@@ -12,7 +12,10 @@ logging.config.dictConfig(LOGGING_CONFIG)
 
 set_llm_cache(InMemoryCache())
 
-app = FastAPI()
+app = FastAPI(
+    title="News Scraper",
+    description="This API allows you summarize articles and query to find related ones.",
+    version="1.0.0")
 
 app.include_router(articles.router)
 
